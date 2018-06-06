@@ -62,8 +62,6 @@ public class ImagePickerModule
 
 	public static final int REQUEST_LAUNCH_IMAGE_LIBRARY = 13002;
 
-	public static final int REQUEST_LAUNCH_VIDEO_LIBRARY = 13003;
-
 	public static final int REQUEST_PERMISSIONS_FOR_CAMERA = 14001;
 
 	public static final int REQUEST_PERMISSIONS_FOR_LIBRARY = 14002;
@@ -333,13 +331,6 @@ public class ImagePickerModule
 				}
 				imageConfig = imageConfig.withOriginalFile(new File(realPath));
 				break;
-
-			case REQUEST_LAUNCH_VIDEO_LIBRARY:
-				responseHelper.putString("uri", data.getData().toString());
-				responseHelper.putString("path", getRealPathFromURI(data.getData()));
-				responseHelper.invokeResponse(callback);
-				callback = null;
-				return;
 		}
 
 		final ReadExifResult result = readExifInterface(responseHelper, imageConfig);
@@ -421,7 +412,7 @@ public class ImagePickerModule
 	}
 
 	private boolean passResult(int requestCode) {
-		return callback == null || (cameraCaptureURI == null && requestCode == REQUEST_LAUNCH_IMAGE_CAPTURE) || (requestCode != REQUEST_LAUNCH_IMAGE_CAPTURE && requestCode != REQUEST_LAUNCH_IMAGE_LIBRARY && requestCode != REQUEST_LAUNCH_VIDEO_LIBRARY);
+		return callback == null || (cameraCaptureURI == null && requestCode == REQUEST_LAUNCH_IMAGE_CAPTURE) || (requestCode != REQUEST_LAUNCH_IMAGE_CAPTURE && requestCode != REQUEST_LAUNCH_IMAGE_LIBRARY);
 	}
 
 	private void updatedResultResponse(@Nullable final Uri uri, @NonNull final String path) {
@@ -436,10 +427,14 @@ public class ImagePickerModule
 	}
 
 	private boolean permissionsCheck(@NonNull final Activity activity, @NonNull final Callback callback, @NonNull final int requestCode) {
-		final int writePermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-		final int cameraPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA);
 
-		final boolean permissionsGrated = writePermission == PackageManager.PERMISSION_GRANTED && cameraPermission == PackageManager.PERMISSION_GRANTED;
+		boolean permissionsGrated = true;
+
+		if (requestCode == REQUEST_PERMISSIONS_FOR_CAMERA) {
+			final int writePermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+			final int cameraPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA);
+			permissionsGrated = writePermission == PackageManager.PERMISSION_GRANTED && cameraPermission == PackageManager.PERMISSION_GRANTED;
+		}
 
 		if (!permissionsGrated) {
 			this.callback = callback;
