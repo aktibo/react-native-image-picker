@@ -196,6 +196,7 @@ public class ImagePickerModule
 			return;
 		}
 
+    this.callback = callback;
 		this.options = options;
 
 		parseOptions(this.options);
@@ -260,6 +261,7 @@ public class ImagePickerModule
 			return;
 		}
 
+    this.callback = callback;
 		this.options = options;
 
 		if (!permissionsCheck(currentActivity, callback, REQUEST_PERMISSIONS_FOR_LIBRARY)) {
