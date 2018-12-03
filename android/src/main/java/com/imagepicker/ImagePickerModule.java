@@ -227,8 +227,6 @@ public class ImagePickerModule
 			return;
 		}
 
-		this.callback = callback;
-
 		// Workaround for Android bug.
 		// grantUriPermission also needed for KITKAT,
 		// see https://code.google.com/p/android/issues/detail?id=76683
